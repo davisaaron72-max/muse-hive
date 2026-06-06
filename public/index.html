@@ -387,7 +387,7 @@ async function sendMessage() {
     console.log('API response:', JSON.stringify(data));
     removeTyping(typingId);
 
-    const reply = data.content?.map(b => b.text || '').join('') || "I'm sorry, I had a moment. Could you ask me again?";
+    const reply = data.content?.map(b => b.text || '').join('') || JSON.stringify(data);
     appendMessage('bot', reply);
     conversationHistory.push({ role: 'assistant', content: reply });
 
