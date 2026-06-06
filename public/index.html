@@ -384,6 +384,7 @@ async function sendMessage() {
     });
 
     const data = await response.json();
+    console.log('API response:', JSON.stringify(data));
     removeTyping(typingId);
 
     const reply = data.content?.map(b => b.text || '').join('') || "I'm sorry, I had a moment. Could you ask me again?";
