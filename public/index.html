@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MUSE — Hive Beauty Collective</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F7F3EE;
+    --warm-white: #FDFAF7;
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --charcoal: #2C2825;
+    --mid: #7A6E65;
+    --soft: #B5A99F;
+    --border: rgba(201,169,110,0.25);
+  }
+
+  body {
+    background: var(--cream);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    color: var(--charcoal);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    background: var(--charcoal);
+    padding: 28px 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 32px; right: 32px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .header-bee {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+
+  .header-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--warm-white);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .header-sub {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--soft);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .status-dot {
+    position: absolute;
+    top: 28px; right: 32px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #7EC8A4;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  .chat-area {
+    background: var(--warm-white);
+    min-height: 420px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 24px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .chat-area::-webkit-scrollbar { width: 3px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 2px; }
+
+  .msg {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: fadeUp 0.3s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { align-items: flex-end; }
+  .msg.bot { align-items: flex-start; }
+
+  .msg-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--soft);
+    padding: 0 4px;
+  }
+
+  .bubble {
+    max-width: 88%;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .msg.bot .bubble {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 0 12px 12px 12px;
+    color: var(--charcoal);
+  }
+
+  .msg.user .bubble {
+    background: var(--charcoal);
+    color: var(--warm-white);
+    border-radius: 12px 0 12px 12px;
+  }
+
+  .typing-bubble {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 0 12px 12px 12px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .typing-bubble span {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: bounce 1.2s ease-in-out infinite;
+  }
+  .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  .suggestions {
+    padding: 12px 24px;
+    background: var(--warm-white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .suggestions::-webkit-scrollbar { display: none; }
+
+  .suggestion-chip {
+    white-space: nowrap;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    flex-shrink: 0;
+  }
+
+  .suggestion-chip:hover {
+    border-color: var(--gold);
+    color: var(--charcoal);
+    background: var(--cream);
+  }
+
+  .input-area {
+    background: var(--warm-white);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    border-radius: 0 0 2px 2px;
+  }
+
+  .input-field {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    color: var(--charcoal);
+    background: var(--cream);
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+    min-height: 42px;
+    max-height: 100px;
+  }
+
+  .input-field::placeholder { color: var(--soft); }
+  .input-field:focus { border-color: var(--gold); }
+
+  .send-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--charcoal);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .send-btn:hover { background: var(--gold); transform: scale(1.05); }
+  .send-btn:active { transform: scale(0.97); }
+  .send-btn svg { width: 16px; height: 16px; fill: var(--warm-white); }
+
+  .footer-brand {
+    text-align: center;
+    padding: 12px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--soft);
+  }
+
+  .footer-brand a { color: var(--gold); text-decoration: none; }
+
+  .msg-divider {
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--soft);
+    position: relative;
+  }
+
+  .msg-divider::before, .msg-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30%;
+    height: 1px;
+    background: var(--border);
+  }
+  .msg-divider::before { left: 0; }
+  .msg-divider::after { right: 0; }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="header">
+    <div class="header-bee">✦ Hive Beauty Collective</div>
+    <div class="header-name">MUSE</div>
+    <div class="header-sub">Your personal beauty guide</div>
+    <div class="status-dot"><div class="dot"></div>Available</div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="msg-divider">Today</div>
+    <div class="msg bot">
+      <div class="msg-label">Muse</div>
+      <div class="bubble">
+        Welcome to Hive Beauty Collective ✦<br><br>
+        I'm MUSE, your personal guide to everything at the Hive. I can help you with booking, services, policies, and anything else you need to feel at home here.<br><br>
+        What can I do for you today?
+      </div>
+    </div>
+  </div>
+
+  <div class="suggestions" id="suggestions">
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">How do I book?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">Cancellation policy?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">Where are you located?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">Do you accept walk-ins?</button>
+    <button class="suggestion-chip" onclick="sendSuggestion(this)">Do you offer gift cards?</button>
+  </div>
+
+  <div class="input-area">
+    <textarea class="input-field" id="userInput" placeholder="Ask me anything…" rows="1"
+      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+  <div class="footer-brand">
+    Powered by AI · <a href="https://www.hiveasuitebeautycollective.com" target="_blank">hiveasuitebeautycollective.com</a>
+  </div>
+</div>
+
+<script>
+let conversationHistory = [];
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  autoResize(input);
+  hideSuggestions();
+  appendMessage('user', text);
+  conversationHistory.push({ role: 'user', content: text });
+
+  const typingId = showTyping();
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: conversationHistory })
+    });
+
+    const data = await response.json();
+    removeTyping(typingId);
+
+    const reply = data.content?.map(b => b.text || '').join('') || "I'm sorry, I had a moment. Could you ask me again?";
+    appendMessage('bot', reply);
+    conversationHistory.push({ role: 'assistant', content: reply });
+
+  } catch (err) {
+    removeTyping(typingId);
+    appendMessage('bot', "I'm having a little trouble connecting right now. Please try again in a moment, or reach us directly at (910) 757-0069.");
+  }
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('userInput').value = btn.textContent;
+  sendMessage();
+}
+
+function hideSuggestions() {
+  document.getElementById('suggestions').style.display = 'none';
+}
+
+function appendMessage(role, text) {
+  const area = document.getElementById('chatArea');
+  const msg = document.createElement('div');
+  msg.className = `msg ${role}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = role === 'bot' ? 'Muse' : 'You';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = text.replace(/\n/g, '<br>');
+
+  msg.appendChild(label);
+  msg.appendChild(bubble);
+  area.appendChild(msg);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showTyping() {
+  const area = document.getElementById('chatArea');
+  const msg = document.createElement('div');
+  msg.className = 'msg bot';
+  msg.id = 'typing-' + Date.now();
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = 'Muse';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'typing-bubble';
+  bubble.innerHTML = '<span></span><span></span><span></span>';
+
+  msg.appendChild(label);
+  msg.appendChild(bubble);
+  area.appendChild(msg);
+  area.scrollTop = area.scrollHeight;
+  return msg.id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+</script>
+</body>
+</html>
